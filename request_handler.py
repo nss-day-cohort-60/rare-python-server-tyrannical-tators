@@ -1,13 +1,39 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-
+from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
+from views import (all, single)
 
+method_mapper = {
+    'single': single, 'all': all
+}
 
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
-    def parse_url(self):
+    def get_all_or_single(self, resource, id):
+        """Determines whether the client needs all items or a single item and then calls the correct function."""
+
+        if id is not None:
+            response = method_mapper["single"](resource, id)
+
+            if response is None:
+                self._set_headers(404)
+                response = ''
+            else:
+                self._set_headers(200)
+        else:
+            response = method_mapper["all"](resource)
+
+            if response is not None:
+                self._set_headers(200)
+            else:
+                self._set_headers(404)
+                response = ''
+
+        return response
+
+    def parse_url(self, path):
         """Parse the url into the resource and id"""
         path_params = self.path.split('/')
         resource = path_params[1]
@@ -44,14 +70,26 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods',
-                         'GET, POST, PUT, DELETE')
+                        'GET, POST, PUT, DELETE')
         self.send_header('Access-Control-Allow-Headers',
-                         'X-Requested-With, Content-Type, Accept')
+                        'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
     def do_GET(self):
-        """Handle Get requests to the server"""
-        pass
+        """Handles GET requests to the server"""
+        # Parse URL and store entire tuple in a variable
+        parsed = self.parse_url(self.path)
+
+        if '?' not in self.path:
+            response = None
+            (resource, id) = parsed
+            response = self.get_all_or_single(resource, id)
+
+        else: # There is a ? in the path, run the query param functions
+            response = {}
+            (resource, query) = parsed
+
+        self.wfile.write(json.dumps(response).encode())
 
 
     def do_POST(self):
