@@ -112,5 +112,3 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('like', 'https://www.pngfin
 INSERT INTO Reactions ('label', 'image_url') VALUES ('love', 'https://www.clipartmax.com/png/middle/124-1245735_heart-emoji-transparent-background.png');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/uploads/preview/sad-face-transparent-png-crying-emoji-transparent-background-11562873850hiicomfwuq.png');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
-
-SELECT * FROM Users
