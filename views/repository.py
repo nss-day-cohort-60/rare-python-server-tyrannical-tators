@@ -2,6 +2,7 @@ import sqlite3
 import json
 from models import Post, Category, Tag, User
 
+
 def all(resource):
     # Open a connection to the database
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -9,7 +10,7 @@ def all(resource):
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-    
+
         if resource == 'categories':
             db_cursor.execute("""
             SELECT
@@ -36,7 +37,7 @@ def all(resource):
                 categories.append(category.__dict__)
 
             return categories
-        
+
         if resource == 'tags':
             db_cursor.execute("""
             SELECT
@@ -65,7 +66,7 @@ def all(resource):
             return tags
 
         if resource == 'posts':
-        
+
             db_cursor.execute("""
             SELECT
                 p.id,
@@ -75,8 +76,15 @@ def all(resource):
                 p.publication_date,
                 p.image_url,
                 p.content,
-                p.approved
+                p.approved,
+                u.first_name first_name,
+                u.last_name last_name,
+                c.label label
             FROM posts p
+            JOIN Users u
+                ON u.id = p.user_id
+            JOIN Categories c 
+                ON c.id = p.category_id
             """)
 
             # Initialize an empty list to hold all post representations
@@ -93,15 +101,22 @@ def all(resource):
                 # exact order of the parameters defined in the
                 # Post class above.
                 post = Post(row['id'], row['user_id'], row['category_id'],
-                                row['title'], row['publication_date'], row['image_url'],
-                                row['content'], row['approved'])
+                            row['title'], row['publication_date'], row['image_url'],
+                            row['content'], row['approved'])
+
+                user = User(row['id'], row['first_name'], row['last_name'])
+
+                category = Category(row['id'], row['label'])
+
+                post.author = user.__dict__
+                post.category = category.__dict__
 
                 posts.append(post.__dict__)
 
             return posts
 
         if resource == 'users':
-        
+
             db_cursor.execute("""
             SELECT
                 u.id,
@@ -131,13 +146,14 @@ def all(resource):
                 # exact order of the parameters defined in the
                 # User class above.
                 user = User(row['id'], row['first_name'], row['last_name'],
-                                row['email'], row['bio'], row['username'],
-                                row['password'], row['profile_image_url'], row['created_on'],
-                                row['active'])
+                            row['email'], row['bio'], row['username'],
+                            row['password'], row['profile_image_url'], row['created_on'],
+                            row['active'])
 
                 users.append(user.__dict__)
 
-            return users
+        return users
+
 
 def single(resource, id):
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -157,7 +173,7 @@ def single(resource, id):
                 p.approved
             FROM posts p
             WHERE p.id = ?
-            """, ( id, ))
+            """, (id, ))
 
             # Load the single result into memory
             data = db_cursor.fetchone()
@@ -167,8 +183,8 @@ def single(resource, id):
 
             # Create a post instance from the data
             post = Post(data['id'], data['user_id'], data['category_id'],
-                            data['title'], data['publication_date'], data['image_url'],
-                            data['content'], data['approved'])
+                        data['title'], data['publication_date'], data['image_url'],
+                        data['content'], data['approved'])
 
             return post.__dict__
 
@@ -187,7 +203,7 @@ def single(resource, id):
                 u.active
             FROM users u
             WHERE u.id = ?
-            """, ( id, ))
+            """, (id, ))
 
             # Load the single result into memory
             data = db_cursor.fetchone()
@@ -197,8 +213,8 @@ def single(resource, id):
 
             # Create a user instance from the data
             user = User(data['id'], data['first_name'], data['last_name'],
-                            data['email'], data['bio'], data['username'],
-                            data['password'], data['profile_image_url'], data['created_on'],
-                            data['active'])
+                        data['email'], data['bio'], data['username'],
+                        data['password'], data['profile_image_url'], data['created_on'],
+                        data['active'])
 
             return user.__dict__
