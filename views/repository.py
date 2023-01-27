@@ -9,13 +9,14 @@ def all(resource, key, value):
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-    
+
         if resource == 'categories':
             db_cursor.execute("""
             SELECT
                 c.id,
                 c.label
             FROM categories c
+            ORDER BY c.label ASC
             """)
 
             # Initialize an empty list to hold all category representations
@@ -36,13 +37,15 @@ def all(resource, key, value):
                 categories.append(category.__dict__)
 
             return categories
-        
+
         if resource == 'tags':
             db_cursor.execute("""
             SELECT
                 t.id,
                 t.label
             FROM tags t
+            ORDER By t.label ASC
+            
             """)
 
             # Initialize an empty list to hold all tag representations
@@ -130,7 +133,7 @@ def all(resource, key, value):
             return posts
 
         if resource == 'users':
-        
+
             db_cursor.execute("""
             SELECT
                 u.id,
@@ -144,6 +147,7 @@ def all(resource, key, value):
                 u.created_on,
                 u.active
             FROM users u
+            ORDER BY u.username ASC
             """)
 
             # Initialize an empty list to hold all user representations
@@ -160,13 +164,14 @@ def all(resource, key, value):
                 # exact order of the parameters defined in the
                 # User class above.
                 user = User(row['id'], row['first_name'], row['last_name'],
-                                row['email'], row['bio'], row['username'],
-                                row['password'], row['profile_image_url'], row['created_on'],
-                                row['active'])
+                            row['email'], row['bio'], row['username'],
+                            row['password'], row['profile_image_url'], row['created_on'],
+                            row['active'])
 
                 users.append(user.__dict__)
 
-            return users
+        return users
+
 
 def single(resource, id):
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -194,7 +199,7 @@ def single(resource, id):
             JOIN categories c
                 on c.id = p.category_id
             WHERE p.id = ?
-            """, ( id, ))
+            """, (id, ))
 
             # Load the single result into memory
             data = db_cursor.fetchone()
@@ -228,7 +233,7 @@ def single(resource, id):
                 u.active
             FROM users u
             WHERE u.id = ?
-            """, ( id, ))
+            """, (id, ))
 
             # Load the single result into memory
             data = db_cursor.fetchone()
@@ -238,8 +243,8 @@ def single(resource, id):
 
             # Create a user instance from the data
             user = User(data['id'], data['first_name'], data['last_name'],
-                            data['email'], data['bio'], data['username'],
-                            data['password'], data['profile_image_url'], data['created_on'],
-                            data['active'])
+                        data['email'], data['bio'], data['username'],
+                        data['password'], data['profile_image_url'], data['created_on'],
+                        data['active'])
 
             return user.__dict__
