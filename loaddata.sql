@@ -113,6 +113,4 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('love', 'https://www.clipar
 INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/uploads/preview/sad-face-transparent-png-crying-emoji-transparent-background-11562873850hiicomfwuq.png');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
 
-SELECT
-    *
-FROM Users
+

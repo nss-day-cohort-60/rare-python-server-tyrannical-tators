@@ -63,11 +63,13 @@ def all(resource, key, value):
                 tags.append(tag.__dict__)
 
             return tags
-
+        #confirms resource
         if resource == 'posts':
             sort_by = ""
             where_clause = ""
+            #confirms query key
             if key == "_sortBy":
+                #confirms query value
                 if value == 'user_id':
                     sort_by = " ORDER BY user_id"
                 elif value == "category_id":
@@ -81,8 +83,23 @@ def all(resource, key, value):
                 
             sql_string = f"""
             SELECT
-                *
+                p.id,
+                p.user_id,
+                p.category_id,
+                p.title,
+                p.publication_date,
+                p.image_url,
+                p.content,
+                p.approved,
+                u.first_name,
+                u.last_name,
+                u.username,
+                c.label
             FROM posts p
+            JOIN users u
+                ON u.id = p.user_id
+            JOIN categories c
+                on c.id = p.category_id
             {where_clause}
             {sort_by}
             """
@@ -104,7 +121,10 @@ def all(resource, key, value):
                 post = Post(row['id'], row['user_id'], row['category_id'],
                                 row['title'], row['publication_date'], row['image_url'],
                                 row['content'], row['approved'])
-
+                user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+                category = Category(row['id'], row['label'])
+                post.user = user.__dict__
+                post.category = category.__dict__
                 posts.append(post.__dict__)
 
             return posts
@@ -163,8 +183,16 @@ def single(resource, id):
                 p.publication_date,
                 p.image_url,
                 p.content,
-                p.approved
+                p.approved,
+                u.first_name,
+                u.last_name,
+                u.username,
+                c.label
             FROM posts p
+            JOIN users u
+                ON u.id = p.user_id
+            JOIN categories c
+                on c.id = p.category_id
             WHERE p.id = ?
             """, ( id, ))
 
@@ -176,8 +204,12 @@ def single(resource, id):
 
             # Create a post instance from the data
             post = Post(data['id'], data['user_id'], data['category_id'],
-                            data['title'], data['publication_date'], data['image_url'],
-                            data['content'], data['approved'])
+                                data['title'], data['publication_date'], data['image_url'],
+                                data['content'], data['approved'])
+            user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
+            category = Category(data['id'], data['label'])
+            post.user = user.__dict__
+            post.category = category.__dict__
 
             return post.__dict__
 
