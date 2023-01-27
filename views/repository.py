@@ -17,6 +17,7 @@ def all(resource):
                 c.id,
                 c.label
             FROM categories c
+            ORDER BY c.label ASC
             """)
 
             # Initialize an empty list to hold all category representations
@@ -45,6 +46,7 @@ def all(resource):
                 t.label
             FROM tags t
             ORDER By t.label ASC
+            
             """)
 
             # Initialize an empty list to hold all tag representations
