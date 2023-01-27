@@ -43,6 +43,7 @@ def all(resource):
                 t.id,
                 t.label
             FROM tags t
+            ORDER By t.label ASC
             """)
 
             # Initialize an empty list to hold all tag representations
