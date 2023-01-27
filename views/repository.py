@@ -2,7 +2,7 @@ import sqlite3
 import json
 from models import Post, Category, Tag, User
 
-def all(resource):
+def all(resource, key, value):
     # Open a connection to the database
     with sqlite3.connect("./db.sqlite3") as conn:
 
@@ -65,19 +65,28 @@ def all(resource):
             return tags
 
         if resource == 'posts':
-        
-            db_cursor.execute("""
+            sort_by = ""
+            where_clause = ""
+            if key == "_sortBy":
+                if value == 'user_id':
+                    sort_by = " ORDER BY user_id"
+                elif value == "category_id":
+                    sort_by = "ORDER BY category_id"
+                elif value == 'publication_date':
+                    sort_by = 'ORDER BY publication_date DESC'
+            elif key == "user_id":
+                where_clause = f"WHERE p.user_id = {value}"
+            elif key == "category_id":
+                where_clause = f"WHERE p.category_id = {value}"
+                
+            sql_string = f"""
             SELECT
-                p.id,
-                p.user_id,
-                p.category_id,
-                p.title,
-                p.publication_date,
-                p.image_url,
-                p.content,
-                p.approved
+                *
             FROM posts p
-            """)
+            {where_clause}
+            {sort_by}
+            """
+            db_cursor.execute(sql_string)
 
             # Initialize an empty list to hold all post representations
             posts = []
