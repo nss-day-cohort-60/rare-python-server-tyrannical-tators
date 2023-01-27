@@ -131,6 +131,7 @@ def all(resource):
                 u.created_on,
                 u.active
             FROM users u
+            ORDER BY u.username ASC
             """)
 
             # Initialize an empty list to hold all user representations
