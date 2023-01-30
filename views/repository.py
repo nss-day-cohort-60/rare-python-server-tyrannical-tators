@@ -274,7 +274,7 @@ def get_comments_by_post(value):
             c.content,
             u.first_name,
             u.last_name,
-            u.username
+            u.usernamestas
         FROM comments c
         JOIN users u
         ON c.author_id = u.id
@@ -294,3 +294,30 @@ def get_comments_by_post(value):
             comments.append(comment.__dict__)
 
     return comments
+
+
+def create_all(resource, new_post):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        if resource == 'posts':
+            db_cursor.execute("""
+            INSERT INTO Posts
+                ( user_id, category_id, title, publication_date, image_url, content, approved )
+            VALUES
+                ( ?, ?, ?, ?, ?, ?, ?);
+            """, (new_post['user_id'], new_post['category_id'],
+                new_post['title'], new_post['publication_date'],
+                new_post['image_url'], new_post['content'], new_post['approved'] ))
+
+            # The `lastrowid` property on the cursor will return
+            # the primary key of the last thing that got added to
+            # the database.
+            id = db_cursor.lastrowid
+
+            # Add the `id` property to the animal dictionary that
+            # was sent by the client so that the client sees the
+            # primary key in the response.
+            new_post['id'] = id
+
+
+            return new_post
