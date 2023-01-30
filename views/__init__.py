@@ -1,1 +1,1 @@
-from .repository import all, single, create
+from .repository import all, single, delete_all, create

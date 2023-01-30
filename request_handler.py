@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, create)
+from views import (all, single, delete_all, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -110,7 +110,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         else:
             response = create(resource, post_body)
 
-        self.wfile.write(json.dumps(response).encode())
+        self.wfile.write(response.encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
@@ -118,7 +118,10 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         """Handle DELETE Requests"""
-        pass
+        (resource, id, key , value) = self.parse_url(self.path)
+
+        self._set_headers(204)
+        delete_all(resource, id)
 
 
 def main():

@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from datetime import datetime
 from models import Post, Category, Tag, User, Subscription
 
 def all(resource, key, value):
@@ -213,7 +214,7 @@ def single(resource, id):
                                 data['content'], data['approved'])
             user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
             category = Category(data['id'], data['label'])
-            post.user = user.__dict__
+            post.author = user.__dict__
             post.category = category.__dict__
 
             return post.__dict__
@@ -249,20 +250,41 @@ def single(resource, id):
 
             return user.__dict__
 
+def delete_all(resource, id):
+    #connect to database
+    with sqlite3.connect("./db.sqlite3") as conn:
+        #create cursor object
+        db_cursor = conn.cursor()
+        #confirm resource to verify table from which to delete
+        if resource == "posts":
+            db_cursor.execute("""
+            DELETE FROM posts
+            WHERE id=?
+            """, (id,))
+
 def create(resource, new_data):
+    """Adds new resource to the database when they click submit
+
+    Args:
+        resource (dictionary): The dictionary passed to the post request
+
+    Returns:
+        json string
+    """
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
         
+
         if resource == 'subscriptions':
             db_cursor.execute("""
             INSERT INTO Subscriptions
                 (follower_id, author_id, created_on)
             VALUES
                 (?,?,?);
-            """, (new_data['follower_id'], new_data['author_id'], new_data['created_on']))
+            """, (new_data['follower_id'], new_data['author_id'], datetime.now() ))
 
             id = db_cursor.lastrowid
 
             new_data['id'] = id
 
-            return new_data
+            return json.dumps(new_data)
