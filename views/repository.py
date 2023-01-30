@@ -249,6 +249,33 @@ def single(resource, id):
 
             return user.__dict__
 
+def edit_all(resource, id, post_body):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        rows_affected = 0
+
+        if resource == "posts":
+            db_cursor.execute("""
+            UPDATE posts
+                SET
+                    category_id = ?,
+                    title = ?,
+                    image_url = ?,
+                    content = ?
+            WHERE id = ?
+            """, (post_body["category_id"], post_body["title"], post_body["image_url"], post_body["content"], id))
+
+            rows_affected = db_cursor.rowcount
+
+    if rows_affected == 0:
+        return False
+    else:
+        return True
+
+
+
+
 def delete_all(resource, id):
     #connect to database
     with sqlite3.connect("./db.sqlite3") as conn:
@@ -307,16 +334,9 @@ def create_all(resource, new_post):
                 ( ?, ?, ?, ?, ?, ?, ?);
             """, (new_post['user_id'], new_post['category_id'],
                 new_post['title'], new_post['publication_date'],
-                new_post['image_url'], new_post['content'], new_post['approved'] ))
-
-            # The `lastrowid` property on the cursor will return
-            # the primary key of the last thing that got added to
-            # the database.
+                new_post['image_url'], new_post['content'], new_post['approved'] )
             id = db_cursor.lastrowid
 
-            # Add the `id` property to the animal dictionary that
-            # was sent by the client so that the client sees the
-            # primary key in the response.
             new_post['id'] = id
 
 
