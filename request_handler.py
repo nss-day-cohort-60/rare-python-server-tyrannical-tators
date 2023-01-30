@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, delete_all, create)
+from views import (all, single, delete_all, get_comments_by_post, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -88,9 +88,15 @@ class HandleRequests(BaseHTTPRequestHandler):
             response = self.get_all_or_single(resource, id, key, value)
 
         else: # There is a ? in the path, run the query param functions
+            
             response = {}
             (resource, id, key , value) = parsed
-            response = self.get_all_or_single(resource, id, key, value)
+            if key == 'postId' and resource == 'comments':
+                self._set_headers(200)
+                response = get_comments_by_post(value)
+            else:
+                response = self.get_all_or_single(resource, id, key, value)
+
 
         self.wfile.write(json.dumps(response).encode())
 

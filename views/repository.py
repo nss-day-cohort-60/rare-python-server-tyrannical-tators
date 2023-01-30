@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
-from models import Post, Category, Tag, User, Subscription
+from models import Post, Category, Tag, User, Subscription, Comment
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -262,6 +262,40 @@ def delete_all(resource, id):
             WHERE id=?
             """, (id,))
 
+def get_comments_by_post(value):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            c.id,
+            c.post_id,
+            c.author_id,
+            c.content,
+            u.first_name,
+            u.last_name,
+            u.username
+        FROM comments c
+        JOIN users u
+        ON c.author_id = u.id
+        WHERE c.post_id = ?
+        """, (value, ))
+
+        comments = []
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            comment = Comment(
+                row['id'], row['post_id'], row['author_id'], row['content'])
+
+            user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+
+            comment.user = user.__dict__
+            comments.append(comment.__dict__)
+
+    return comments
+
 def create(resource, new_data):
     """Adds new resource to the database when they click submit
 
@@ -274,6 +308,7 @@ def create(resource, new_data):
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
         
+
 
         if resource == 'subscriptions':
             db_cursor.execute("""
