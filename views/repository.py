@@ -249,6 +249,33 @@ def single(resource, id):
 
             return user.__dict__
 
+def edit_all(resource, id, post_body):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        rows_affected = 0
+
+        if resource == "posts":
+            db_cursor.execute("""
+            UPDATE posts
+                SET
+                    category_id = ?,
+                    title = ?,
+                    image_url = ?,
+                    content = ?
+            WHERE id = ?
+            """, (post_body["category_id"], post_body["title"], post_body["image_url"], post_body["content"], id))
+
+            rows_affected = db_cursor.rowcount
+
+    if rows_affected == 0:
+        return False
+    else:
+        return True
+
+
+
+
 def delete_all(resource, id):
     #connect to database
     with sqlite3.connect("./db.sqlite3") as conn:
