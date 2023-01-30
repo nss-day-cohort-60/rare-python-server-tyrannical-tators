@@ -213,7 +213,7 @@ def single(resource, id):
                                 data['content'], data['approved'])
             user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
             category = Category(data['id'], data['label'])
-            post.user = user.__dict__
+            post.author = user.__dict__
             post.category = category.__dict__
 
             return post.__dict__
@@ -248,6 +248,18 @@ def single(resource, id):
                         data['active'])
 
             return user.__dict__
+
+def delete_all(resource, id):
+    #connect to database
+    with sqlite3.connect("./db.sqlite3") as conn:
+        #create cursor object
+        db_cursor = conn.cursor()
+        #confirm resource to verify table from which to delete
+        if resource == "posts":
+            db_cursor.execute("""
+            DELETE FROM posts
+            WHERE id=?
+            """, (id,))
 
 def get_comments_by_post(value):
     with sqlite3.connect("./db.sqlite3") as conn:
