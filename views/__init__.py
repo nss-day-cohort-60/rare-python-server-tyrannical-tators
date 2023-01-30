@@ -1,1 +1,1 @@
-from .repository import all, single
+from .repository import all, single, get_comments_by_post
