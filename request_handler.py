@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single)
+from views import (all, single, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -11,7 +11,7 @@ method_mapper = {
 class HandleRequests(BaseHTTPRequestHandler):
     """Handles the requests to this server"""
 
-    def get_all_or_single(self, resource, id):
+    def get_all_or_single(self, resource, id, key, value):
         """Determines whether the client needs all items or a single item and then calls the correct function."""
 
         if id is not None:
@@ -23,7 +23,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 self._set_headers(200)
         else:
-            response = method_mapper["all"](resource)
+            response = method_mapper["all"](resource, key, value)
 
             if response is not None:
                 self._set_headers(200)
@@ -37,20 +37,23 @@ class HandleRequests(BaseHTTPRequestHandler):
         """Parse the url into the resource and id"""
         path_params = self.path.split('/')
         resource = path_params[1]
+        id = None
+        key=None
+        value = None
         if '?' in resource:
             param = resource.split('?')[1]
             resource = resource.split('?')[0]
             pair = param.split('=')
             key = pair[0]
             value = pair[1]
-            return (resource, key, value)
+            return (resource, id, key, value)
         else:
-            id = None
+            
             try:
                 id = int(path_params[2])
             except (IndexError, ValueError):
                 pass
-            return (resource, id)
+            return (resource, id, key, value)
 
     def _set_headers(self, status):
         """Sets the status code, Content-Type and Access-Control-Allow-Origin
@@ -79,15 +82,15 @@ class HandleRequests(BaseHTTPRequestHandler):
         """Handles GET requests to the server"""
         # Parse URL and store entire tuple in a variable
         parsed = self.parse_url(self.path)
-
         if '?' not in self.path:
             response = None
-            (resource, id) = parsed
-            response = self.get_all_or_single(resource, id)
+            (resource, id, key, value) = parsed
+            response = self.get_all_or_single(resource, id, key, value)
 
         else: # There is a ? in the path, run the query param functions
             response = {}
-            (resource, query) = parsed
+            (resource, id, key , value) = parsed
+            response = self.get_all_or_single(resource, id, key, value)
 
         self.wfile.write(json.dumps(response).encode())
 
@@ -98,14 +101,16 @@ class HandleRequests(BaseHTTPRequestHandler):
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
-        resource, _ = self.parse_url(self.path)
+        (resource, id, key , value) = self.parse_url(self.path)
 
         if resource == 'login':
             response = login_user(post_body)
-        if resource == 'register':
+        elif resource == 'register':
             response = create_user(post_body)
+        else:
+            response = create(resource, post_body)
 
-        self.wfile.write(response.encode())
+        self.wfile.write(json.dumps(response).encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
