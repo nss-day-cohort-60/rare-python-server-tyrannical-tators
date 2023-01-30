@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, delete_all, get_comments_by_post, create)
+from views import (all, single, edit_all, delete_all, get_comments_by_post, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -120,7 +120,23 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
-        pass
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        # Parse the URL
+        (resource, id, key , value) = self.parse_url(self.path)
+
+        success = False
+        success = edit_all(resource, id, post_body)
+
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+
+        # Encode the new object and send in response
+        self.wfile.write("".encode())
 
     def do_DELETE(self):
         """Handle DELETE Requests"""
