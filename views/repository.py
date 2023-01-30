@@ -2,8 +2,7 @@ import sqlite3
 import json
 from models import Post, Category, Tag, User
 
-
-def all(resource):
+def all(resource, key, value):
     # Open a connection to the database
     with sqlite3.connect("./db.sqlite3") as conn:
 
@@ -67,10 +66,25 @@ def all(resource):
                 tags.append(tag.__dict__)
 
             return tags
-
+        #confirms resource
         if resource == 'posts':
-
-            db_cursor.execute("""
+            sort_by = ""
+            where_clause = ""
+            #confirms query key
+            if key == "_sortBy":
+                #confirms query value
+                if value == 'user_id':
+                    sort_by = " ORDER BY user_id"
+                elif value == "category_id":
+                    sort_by = "ORDER BY category_id"
+                elif value == 'publication_date':
+                    sort_by = 'ORDER BY publication_date DESC'
+            elif key == "user_id":
+                where_clause = f"WHERE p.user_id = {value}"
+            elif key == "category_id":
+                where_clause = f"WHERE p.category_id = {value}"
+                
+            sql_string = f"""
             SELECT
                 p.id,
                 p.user_id,
@@ -80,16 +94,19 @@ def all(resource):
                 p.image_url,
                 p.content,
                 p.approved,
-                u.first_name first_name,
-                u.last_name last_name,
-                c.label label
+                u.first_name,
+                u.last_name,
+                u.username,
+                c.label
             FROM posts p
-            JOIN Users u
+            JOIN users u
                 ON u.id = p.user_id
-            JOIN Categories c 
-                ON c.id = p.category_id
-                ORDER BY p.publication_date DESC;
-            """)
+            JOIN categories c
+                on c.id = p.category_id
+            {where_clause}
+            {sort_by}
+            """
+            db_cursor.execute(sql_string)
 
             # Initialize an empty list to hold all post representations
             posts = []
@@ -105,16 +122,12 @@ def all(resource):
                 # exact order of the parameters defined in the
                 # Post class above.
                 post = Post(row['id'], row['user_id'], row['category_id'],
-                            row['title'], row['publication_date'], row['image_url'],
-                            row['content'], row['approved'])
-
-                user = User(row['id'], row['first_name'], row['last_name'])
-
+                                row['title'], row['publication_date'], row['image_url'],
+                                row['content'], row['approved'])
+                user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
                 category = Category(row['id'], row['label'])
-
-                post.author = user.__dict__
+                post.user = user.__dict__
                 post.category = category.__dict__
-
                 posts.append(post.__dict__)
 
             return posts
@@ -175,8 +188,16 @@ def single(resource, id):
                 p.publication_date,
                 p.image_url,
                 p.content,
-                p.approved
+                p.approved,
+                u.first_name,
+                u.last_name,
+                u.username,
+                c.label
             FROM posts p
+            JOIN users u
+                ON u.id = p.user_id
+            JOIN categories c
+                on c.id = p.category_id
             WHERE p.id = ?
             """, (id, ))
 
@@ -188,8 +209,12 @@ def single(resource, id):
 
             # Create a post instance from the data
             post = Post(data['id'], data['user_id'], data['category_id'],
-                        data['title'], data['publication_date'], data['image_url'],
-                        data['content'], data['approved'])
+                                data['title'], data['publication_date'], data['image_url'],
+                                data['content'], data['approved'])
+            user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
+            category = Category(data['id'], data['label'])
+            post.user = user.__dict__
+            post.category = category.__dict__
 
             return post.__dict__
 

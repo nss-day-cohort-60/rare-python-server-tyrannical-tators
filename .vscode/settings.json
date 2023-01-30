@@ -1,0 +1,13 @@
+{
+    "remote.SSH.defaultExtensions": [
+        "gitpod.gitpod-remote-ssh"
+    ],
+    "editor.wordWrap": "on",
+    "php.validate.executablePath": "",
+    "window.zoomLevel": 0,
+    "python.formatting.autopep8Path": "/home/jlinkous15/.local/bin/autopep8",
+    "python.linting.pylintEnabled": true,
+    "python.analysis.diagnosticSeverityOverrides": {
+    "reportGeneralTypeIssues": "none"
+    }
+}

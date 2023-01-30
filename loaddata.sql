@@ -114,18 +114,3 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
 
 
-
-  SELECT
-                p.id,
-                p.user_id,
-                p.category_id,
-                p.title,
-                p.publication_date,
-                p.image_url,
-                p.content,
-                p.approved,
-                u.first_name first_name,
-                u.last_name last_name
-            FROM Posts p
-            JOIN Users u
-                ON u.id = p.user_id
