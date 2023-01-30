@@ -1,1 +1,1 @@
-from .repository import all, single, delete_all
+from .repository import all, single, get_comments_by_post, delete_all
