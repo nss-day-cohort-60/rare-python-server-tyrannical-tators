@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Post, Category, Tag, User
+from models import Post, Category, Tag, User, Subscription
 
 
 def all(resource):
@@ -223,3 +223,21 @@ def single(resource, id):
                         data['active'])
 
             return user.__dict__
+
+def create(resource, new_data):
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        
+        if resource == 'subscriptions':
+            db_cursor.execute("""
+            INSERT INTO Subscriptions
+                (follower_id, author_id, created_on)
+            VALUES
+                (?,?,?);
+            """, (new_data['follower_id'], new_data['author_id'], new_data['created_on']))
+
+            id = db_cursor.lastrowid
+
+            new_data['id'] = id
+
+            return new_data
