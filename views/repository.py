@@ -1,6 +1,7 @@
 import sqlite3
 import json
-from models import Post, Category, Tag, User, Comment
+from datetime import datetime
+from models import Post, Category, Tag, User, Subscription, Comment
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -321,3 +322,31 @@ def get_comments_by_post(value):
             comments.append(comment.__dict__)
 
     return comments
+
+def create(resource, new_data):
+    """Adds new resource to the database when they click submit
+
+    Args:
+        resource (dictionary): The dictionary passed to the post request
+
+    Returns:
+        json string
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        
+
+
+        if resource == 'subscriptions':
+            db_cursor.execute("""
+            INSERT INTO Subscriptions
+                (follower_id, author_id, created_on)
+            VALUES
+                (?,?,?);
+            """, (new_data['follower_id'], new_data['author_id'], datetime.now() ))
+
+            id = db_cursor.lastrowid
+
+            new_data['id'] = id
+
+            return json.dumps(new_data)

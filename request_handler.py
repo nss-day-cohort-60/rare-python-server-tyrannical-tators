@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, edit_all, delete_all, get_comments_by_post)
+from views import (all, single, edit_all, delete_all, get_comments_by_post, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -111,8 +111,10 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == 'login':
             response = login_user(post_body)
-        if resource == 'register':
+        elif resource == 'register':
             response = create_user(post_body)
+        else:
+            response = create(resource, post_body)
 
         self.wfile.write(response.encode())
 
