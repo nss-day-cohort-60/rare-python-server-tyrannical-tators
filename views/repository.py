@@ -378,7 +378,7 @@ def get_subscriptions_by_userId(value):
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        SELECT
+        SELECT DISTINCT
             p.id,
             p.user_id,
             p.category_id,

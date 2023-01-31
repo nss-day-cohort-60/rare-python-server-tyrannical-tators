@@ -113,7 +113,6 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('love', 'https://www.clipar
 INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/uploads/preview/sad-face-transparent-png-crying-emoji-transparent-background-11562873850hiicomfwuq.png');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
 
-<<<<<<< HEAD
 
 INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (1, 1, 'So good!');
 INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (1, 2, 'The best content on the web!');
@@ -133,7 +132,7 @@ JOIN Subscriptions s
 ON s.author_id = u.id
 WHERE s.author_id IN (2, 3, 4, 5);
 
-SELECT
+SELECT DISTINCT
     p.id,
     p.user_id,
     p.category_id,
@@ -156,9 +155,3 @@ JOIN categories c
     on c.id = p.category_id
 WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
 
-=======
-INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')
-
-DELETE FROM Posts
-WHERE id = 39
->>>>>>> main
