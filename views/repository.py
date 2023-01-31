@@ -392,6 +392,7 @@ def get_subscriptions_by_userId(value):
             p.image_url,
             p.content,
             p.approved,
+            u.id user_id,
             u.first_name,
             u.last_name,
             u.username,
@@ -421,7 +422,7 @@ def get_subscriptions_by_userId(value):
             post = Post(row['id'], row['user_id'], row['category_id'],
                             row['title'], row['publication_date'], row['image_url'],
                             row['content'], row['approved'])
-            user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+            user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
             category = Category(row['id'], row['label'])
             post.user = user.__dict__
             post.category = category.__dict__
