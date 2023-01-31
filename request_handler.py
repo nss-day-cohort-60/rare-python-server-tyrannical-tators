@@ -103,11 +103,11 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Make a post request to the server"""
-        self._set_headers(201)
+        self._set_headers(201)      
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
-        (resource, id, key , value) = self.parse_url(self.path)
+        (resource, id, key, value) = self.parse_url(self.path)
 
         if resource == 'login':
             response = login_user(post_body)
