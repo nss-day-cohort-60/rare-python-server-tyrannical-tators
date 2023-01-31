@@ -363,6 +363,14 @@ def create(resource, new_data):
                 new_data['title'], new_data["publication_date"],
                 new_data['image_url'], new_data['content'], new_data['approved'] ))
 
+        elif resource == 'categories':
+            db_cursor.execute("""
+            INSERT INTO Categories
+                ( label )
+            VALUES
+                ( ? );
+            """, (new_data['label'], ))
+
         id = db_cursor.lastrowid
 
         new_data['id'] = id
