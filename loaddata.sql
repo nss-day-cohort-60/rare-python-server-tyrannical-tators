@@ -155,3 +155,4 @@ JOIN categories c
     on c.id = p.category_id
 WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
 
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')

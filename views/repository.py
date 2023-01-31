@@ -288,6 +288,11 @@ def delete_all(resource, id):
             DELETE FROM posts
             WHERE id=?
             """, (id,))
+        elif resource == "subscriptions":
+            db_cursor.execute("""
+            DELETE FROM subscriptions
+            WHERE id=?
+            """, (id,))
 
 def get_comments_by_post(value):
     """Gets comments by post primary key id
