@@ -101,7 +101,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = self.get_all_or_single(resource, id, key, value)
 
 
-        self.wfile.write(json.dump(response).encode())
+        self.wfile.write(json.dumps(response).encode())
 
 
     def do_POST(self):
