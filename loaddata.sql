@@ -113,4 +113,46 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('love', 'https://www.clipar
 INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/uploads/preview/sad-face-transparent-png-crying-emoji-transparent-background-11562873850hiicomfwuq.png');
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
 
+
+INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (1, 1, 'So good!');
+INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (1, 2, 'The best content on the web!');
+INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (2, 1, 'Very enlightening.');
+INSERT INTO Comments ('post_id', 'author_id', 'content') VALUES (2, 2, 'So glad I came across this article!');
+
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') Values (1, 2, 2023-01-30);
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') Values (1, 3, 2023-01-30);
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') Values (1, 4, 2023-01-30);
+INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') Values (1, 5, 2023-01-30);
+
+SELECT DISTINCT p.title, p.user_id, u.first_name, u.last_name, u.id, p.user_id, s.follower_id
+FROM posts p
+JOIN users u
+ON p.user_id = u.id
+JOIN Subscriptions s
+ON s.author_id = u.id
+WHERE s.author_id IN (2, 3, 4, 5);
+
+SELECT DISTINCT
+    p.id,
+    p.user_id,
+    p.category_id,
+    p.title,
+    p.publication_date,
+    p.image_url,
+    p.content,
+    p.approved,
+    u.first_name,
+    u.last_name,
+    u.username,
+    c.label,
+    subscriptions.follower_id
+FROM posts p
+JOIN subscriptions
+  ON p.user_id = Subscriptions.author_id
+JOIN users u
+    ON u.id = p.user_id
+JOIN categories c
+    on c.id = p.category_id
+WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
+
 INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')

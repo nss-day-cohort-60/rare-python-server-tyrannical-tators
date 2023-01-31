@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, edit_all, delete_all, get_comments_by_post, create)
+from views import (all, single, edit_all, delete_all, get_comments_by_post, create, get_subscriptions_by_userId)
 
 method_mapper = {
     'single': single, 'all': all
@@ -90,10 +90,13 @@ class HandleRequests(BaseHTTPRequestHandler):
         else: # There is a ? in the path, run the query param functions
             
             response = {}
-            (resource, id, key , value) = parsed
+            (resource, id, key, value) = parsed
             if key == 'postId' and resource == 'comments':
                 self._set_headers(200)
                 response = get_comments_by_post(value)
+            elif key == 'userId' and resource == 'subscriptions':
+                self._set_headers(200)
+                response = get_subscriptions_by_userId(value)
             else:
                 response = self.get_all_or_single(resource, id, key, value)
 
@@ -103,7 +106,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Make a post request to the server"""
-        self._set_headers(201)      
+        self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''

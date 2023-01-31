@@ -171,7 +171,7 @@ def all(resource, key, value):
 
                 users.append(user.__dict__)
 
-        return users
+            return users
 
 
 def single(resource, id):
@@ -295,6 +295,14 @@ def delete_all(resource, id):
             """, (id,))
 
 def get_comments_by_post(value):
+    """Gets comments by post primary key id
+
+    Args:
+        value: an integer to filter posts 
+
+    Returns:
+        dictionary of comments
+    """
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -360,3 +368,66 @@ def create(resource, new_data):
         new_data['id'] = id
 
         return json.dumps(new_data)
+
+def get_subscriptions_by_userId(value):
+    """filters subscriptions table to return only rows where the value (current user's id) is the follower_id
+
+    Args:
+        value: an integer equal to the current user's id
+
+    Returns:
+        List of dictionaries
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT DISTINCT
+            p.id,
+            p.user_id,
+            p.category_id,
+            p.title,
+            p.publication_date,
+            p.image_url,
+            p.content,
+            p.approved,
+            u.id user_id,
+            u.first_name,
+            u.last_name,
+            u.username,
+            c.label
+        FROM posts p
+        JOIN subscriptions s
+            ON p.user_id = s.author_id
+        JOIN users u
+            ON u.id = p.user_id
+        JOIN categories c
+            ON c.id = p.category_id
+        WHERE p.user_id = s.author_id AND s.follower_id = ?;
+        """, (value, ))
+
+        posts = []
+
+            # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an post instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Post class above.
+            post = Post(row['id'], row['user_id'], row['category_id'],
+                            row['title'], row['publication_date'], row['image_url'],
+                            row['content'], row['approved'])
+            user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+            category = Category(row['id'], row['label'])
+            post.user = user.__dict__
+            post.category = category.__dict__
+            posts.append(post.__dict__)
+
+        return posts
+
+    
