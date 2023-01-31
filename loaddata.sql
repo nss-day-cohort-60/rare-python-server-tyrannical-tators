@@ -114,6 +114,3 @@ INSERT INTO Reactions ('label', 'image_url') VALUES ('sad', 'https://toppng.com/
 INSERT INTO Reactions ('label', 'image_url') VALUES ('wow', 'https://e1.pngegg.com/pngimages/477/616/png-clipart-emoji-sticker-wow-emoji-illustration-thumbnail.png');
 
 INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')
-
-DELETE FROM Posts
-WHERE id = 39

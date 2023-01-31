@@ -141,9 +141,10 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_DELETE(self):
         """Handle DELETE Requests"""
         (resource, id, key , value) = self.parse_url(self.path)
-
+        message = ""
         self._set_headers(204)
         delete_all(resource, id)
+        self.wfile.write(message.encode())
 
 def main():
     """Starts the server on port 8088 using the HandleRequests class
