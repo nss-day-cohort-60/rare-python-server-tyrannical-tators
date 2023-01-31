@@ -323,26 +323,6 @@ def get_comments_by_post(value):
 
     return comments
 
-
-def create_all(resource, new_post):
-    with sqlite3.connect("./db.sqlite3") as conn:
-        db_cursor = conn.cursor()
-        if resource == 'posts':
-            db_cursor.execute("""
-            INSERT INTO Posts
-                ( user_id, category_id, title, publication_date, image_url, content, approved )
-            VALUES
-                ( ?, ?, ?, ?, ?, ?, ?);
-            """, (new_post['user_id'], new_post['category_id'],
-                new_post['title'], new_post['publication_date'],
-                new_post['image_url'], new_post['content'], new_post['approved'] ))
-            id = db_cursor.lastrowid
-
-            new_post['id'] = id
-
-
-            return new_post
-
 def create(resource, new_data):
     """Adds new resource to the database when they click submit
 
@@ -364,6 +344,17 @@ def create(resource, new_data):
             VALUES
                 (?,?,?);
             """, (new_data['follower_id'], new_data['author_id'], datetime.now() ))
+
+        if resource == 'posts':
+            db_cursor.execute("""
+            INSERT INTO Posts
+                ( user_id, category_id, title, publication_date, image_url, content, approved )
+            VALUES
+                ( ?, ?, ?, ?, ?, ?, ?);
+            """, (new_data['user_id'], new_data['category_id'],
+                new_data['title'], datetime.now(),
+                new_data['image_url'], new_data['content'], new_data['approved'] ))
+
 
             id = db_cursor.lastrowid
 
