@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib.parse import urlparse, parse_qs
 from views.user import create_user, login_user
-from views import (all, single, edit_all, delete_all, get_comments_by_post)
+from views import (all, single, edit_all, delete_all, get_comments_by_post, create)
 
 method_mapper = {
     'single': single, 'all': all
@@ -103,16 +103,18 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Make a post request to the server"""
-        self._set_headers(201)
+        self._set_headers(201)      
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
-        (resource, id, key , value) = self.parse_url(self.path)
+        (resource, id, key, value) = self.parse_url(self.path)
 
         if resource == 'login':
             response = login_user(post_body)
-        if resource == 'register':
+        elif resource == 'register':
             response = create_user(post_body)
+        else:
+            response = create(resource, post_body)
 
         self.wfile.write(response.encode())
 
@@ -143,7 +145,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         self._set_headers(204)
         delete_all(resource, id)
         self.wfile.write(message.encode())
-
 
 def main():
     """Starts the server on port 8088 using the HandleRequests class
