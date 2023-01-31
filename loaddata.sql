@@ -131,3 +131,27 @@ ON p.user_id = u.id
 JOIN Subscriptions s
 ON s.author_id = u.id
 WHERE s.author_id IN (2, 3, 4, 5);
+
+SELECT
+    p.id,
+    p.user_id,
+    p.category_id,
+    p.title,
+    p.publication_date,
+    p.image_url,
+    p.content,
+    p.approved,
+    u.first_name,
+    u.last_name,
+    u.username,
+    c.label,
+    subscriptions.follower_id
+FROM posts p
+JOIN subscriptions
+  ON p.user_id = Subscriptions.author_id
+JOIN users u
+    ON u.id = p.user_id
+JOIN categories c
+    on c.id = p.category_id
+WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
+

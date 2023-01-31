@@ -366,42 +366,13 @@ def get_subscriptions_by_userId(value):
         value: an integer equal to the current user's id
 
     Returns:
-        array (hopefully)
+        List of dictionaries
     """
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        SELECT
-            s.id,
-            s.follower_id,
-            s.author_id,
-            s.created_on
-        FROM subscriptions s
-        WHERE s.follower_id = ?
-        """, (value, ))
-
-        subscriptions = []
-
-        dataset = db_cursor.fetchall()
-
-        for row in dataset:
-            subscription = Subscription(
-                None, None, row['author_id'], None)
-
-            subscriptions.append(int(subscription.author_id))
-        
-        def convert(list):
-            return tuple(list)
-
-        subscriptionString = convert(subscriptions)
-
-    with sqlite3.connect("./db.sqlite3") as conn:
-        conn.row_factory = sqlite3.Row
-        db_cursor = conn.cursor()
-
-        sql_string = f"""
         SELECT
             p.id,
             p.user_id,
@@ -416,14 +387,15 @@ def get_subscriptions_by_userId(value):
             u.username,
             c.label
         FROM posts p
+        JOIN subscriptions s
+            ON p.user_id = s.author_id
         JOIN users u
             ON u.id = p.user_id
         JOIN categories c
-            on c.id = p.category_id
-        WHERE p.user_id IN {subscriptionString}
-        """
-        db_cursor.execute(sql_string)
-        
+            ON c.id = p.category_id
+        WHERE p.user_id = s.author_id AND s.follower_id = ?;
+        """, (value, ))
+
         posts = []
 
             # Convert rows of data into a Python list
