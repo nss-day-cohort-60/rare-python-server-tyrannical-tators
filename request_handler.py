@@ -101,12 +101,12 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = self.get_all_or_single(resource, id, key, value)
 
 
-        self.wfile.write(json.dumps(response).encode())
+        self.wfile.write(json.dump(response).encode())
 
 
     def do_POST(self):
         """Make a post request to the server"""
-        self._set_headers(201)      
+        self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
@@ -119,7 +119,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         else:
             response = create(resource, post_body)
 
-        self.wfile.write(json.dumps(response).encode())
+        self.wfile.write(response.encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""

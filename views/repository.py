@@ -171,7 +171,7 @@ def all(resource, key, value):
 
                 users.append(user.__dict__)
 
-        return users
+            return users
 
 
 def single(resource, id):
