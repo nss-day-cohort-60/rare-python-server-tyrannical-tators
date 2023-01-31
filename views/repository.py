@@ -1,6 +1,7 @@
 import sqlite3
 import json
-from models import Post, Category, Tag, User, Comment
+from datetime import datetime
+from models import Post, Category, Tag, User, Subscription, Comment
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -289,6 +290,14 @@ def delete_all(resource, id):
             """, (id,))
 
 def get_comments_by_post(value):
+    """Gets comments by post primary key id
+
+    Args:
+        value: an integer to filter posts 
+
+    Returns:
+        dictionary of comments
+    """
     with sqlite3.connect("./db.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -321,3 +330,121 @@ def get_comments_by_post(value):
             comments.append(comment.__dict__)
 
     return comments
+
+def create(resource, new_data):
+    """Adds new resource to the database when they click submit
+
+    Args:
+        resource (dictionary): The dictionary passed to the post request
+
+    Returns:
+        json string
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        db_cursor = conn.cursor()
+        
+
+
+        if resource == 'subscriptions':
+            db_cursor.execute("""
+            INSERT INTO Subscriptions
+                (follower_id, author_id, created_on)
+            VALUES
+                (?,?,?);
+            """, (new_data['follower_id'], new_data['author_id'], datetime.now() ))
+
+            id = db_cursor.lastrowid
+
+            new_data['id'] = id
+
+            return json.dumps(new_data)
+
+def get_subscriptions_by_userId(value):
+    """filters subscriptions table to return only rows where the value (current user's id) is the follower_id
+
+    Args:
+        value: an integer equal to the current user's id
+
+    Returns:
+        array (hopefully)
+    """
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            s.id,
+            s.follower_id,
+            s.author_id,
+            s.created_on
+        FROM subscriptions s
+        WHERE s.follower_id = ?
+        """, (value, ))
+
+        subscriptions = []
+
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            subscription = Subscription(
+                None, None, row['author_id'], None)
+
+            subscriptions.append(int(subscription.author_id))
+        
+        def convert(list):
+            return tuple(list)
+
+        subscriptionString = convert(subscriptions)
+
+    with sqlite3.connect("./db.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        sql_string = f"""
+        SELECT
+            p.id,
+            p.user_id,
+            p.category_id,
+            p.title,
+            p.publication_date,
+            p.image_url,
+            p.content,
+            p.approved,
+            u.first_name,
+            u.last_name,
+            u.username,
+            c.label
+        FROM posts p
+        JOIN users u
+            ON u.id = p.user_id
+        JOIN categories c
+            on c.id = p.category_id
+        WHERE p.user_id IN {subscriptionString}
+        """
+        db_cursor.execute(sql_string)
+        
+        posts = []
+
+            # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        # Iterate list of data returned from database
+        for row in dataset:
+
+            # Create an post instance from the current row.
+            # Note that the database fields are specified in
+            # exact order of the parameters defined in the
+            # Post class above.
+            post = Post(row['id'], row['user_id'], row['category_id'],
+                            row['title'], row['publication_date'], row['image_url'],
+                            row['content'], row['approved'])
+            user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+            category = Category(row['id'], row['label'])
+            post.user = user.__dict__
+            post.category = category.__dict__
+            posts.append(post.__dict__)
+
+        return posts
+
+    
