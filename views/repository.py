@@ -302,7 +302,7 @@ def get_comments_by_post(value):
             c.content,
             u.first_name,
             u.last_name,
-            u.usernamestas
+            u.username
         FROM comments c
         JOIN users u
         ON c.author_id = u.id
@@ -355,23 +355,3 @@ def create(resource, new_data):
         new_data['id'] = id
 
         return json.dumps(new_data)
-
-# def create_post(resource, new_post): 
-#     with sqlite3.connect("./db.sqlite3") as conn:
-#         db_cursor = conn.cursor()
-    
-#         if resource == 'posts':
-#             db_cursor.execute("""
-#             INSERT INTO Posts
-#                 ( user_id, category_id, title, publication_date, image_url, content, approved )
-#             VALUES
-#                 ( ?, ?, ?, ?, ?, ?, ?);
-#             """, (new_post['userId'], new_post['categoryId'],
-#                 new_post['title'], datetime.now(),
-#                 new_post['imageUrl'], new_post['content'], new_post['approved'] ))
-
-#             id = db_cursor.lastrowid
-
-#             new_post['id'] = id
-
-#             return json.dumps(new_post)
