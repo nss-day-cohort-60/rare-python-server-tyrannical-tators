@@ -116,7 +116,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         else:
             response = create(resource, post_body)
 
-        self.wfile.write(json.dumps(response).encode())
+        self.wfile.write(response.encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
