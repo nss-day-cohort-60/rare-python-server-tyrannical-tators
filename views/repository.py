@@ -360,8 +360,9 @@ def create(resource, new_data):
 
         id = db_cursor.lastrowid
 
-<<<<<<< HEAD
-            return json.dumps(new_data)
+        new_data['id'] = id
+
+        return json.dumps(new_data)
 
 def get_subscriptions_by_userId(value):
     """filters subscriptions table to return only rows where the value (current user's id) is the follower_id
@@ -424,8 +425,3 @@ def get_subscriptions_by_userId(value):
         return posts
 
     
-=======
-        new_data['id'] = id
-
-        return json.dumps(new_data)
->>>>>>> main
