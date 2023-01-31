@@ -325,18 +325,13 @@ def get_comments_by_post(value):
 
 def create(resource, new_data):
     """Adds new resource to the database when they click submit
-
     Args:
         resource (dictionary): The dictionary passed to the post request
-
     Returns:
         json string
     """
     with sqlite3.connect("./db.sqlite3") as conn:
         db_cursor = conn.cursor()
-        
-
-
         if resource == 'subscriptions':
             db_cursor.execute("""
             INSERT INTO Subscriptions
@@ -345,8 +340,18 @@ def create(resource, new_data):
                 (?,?,?);
             """, (new_data['follower_id'], new_data['author_id'], datetime.now() ))
 
-            id = db_cursor.lastrowid
+        elif resource == 'posts':
+            db_cursor.execute("""
+            INSERT INTO Posts
+                ( user_id, category_id, title, publication_date, image_url, content, approved )
+            VALUES
+                ( ?, ?, ?, ?, ?, ?, ?);
+            """, (new_data['user_id'], new_data['category_id'],
+                new_data['title'], new_data["publication_date"],
+                new_data['image_url'], new_data['content'], new_data['approved'] ))
 
-            new_data['id'] = id
+        id = db_cursor.lastrowid
 
-            return json.dumps(new_data)
+        new_data['id'] = id
+
+        return json.dumps(new_data)

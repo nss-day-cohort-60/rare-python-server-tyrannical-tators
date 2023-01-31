@@ -103,11 +103,11 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Make a post request to the server"""
-        self._set_headers(201)
+        self._set_headers(201)      
         content_len = int(self.headers.get('content-length', 0))
         post_body = json.loads(self.rfile.read(content_len))
         response = ''
-        (resource, id, key , value) = self.parse_url(self.path)
+        (resource, id, key, value) = self.parse_url(self.path)
 
         if resource == 'login':
             response = login_user(post_body)
@@ -116,7 +116,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         else:
             response = create(resource, post_body)
 
-        self.wfile.write(response.encode())
+        self.wfile.write(json.dumps(response).encode())
 
     def do_PUT(self):
         """Handles PUT requests to the server"""
@@ -144,7 +144,6 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self._set_headers(204)
         delete_all(resource, id)
-
 
 def main():
     """Starts the server on port 8088 using the HandleRequests class
