@@ -371,6 +371,14 @@ def create(resource, new_data):
                 ( ? );
             """, (new_data['label'], ))
 
+        elif resource == 'tags':
+            db_cursor.execute("""
+            INSERT INTO Tags
+                ( label )
+            VALUES
+                ( ? );
+            """, (new_data['label'], ))
+
         id = db_cursor.lastrowid
 
         new_data['id'] = id
