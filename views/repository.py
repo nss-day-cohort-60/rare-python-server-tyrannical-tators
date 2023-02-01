@@ -39,7 +39,34 @@ def all(resource, key, value):
 
             return categories
 
-        if resource == 'tags':
+        elif resource == 'posttags':
+            db_cursor.execute("""
+            SELECT
+                pt.id,
+                pt.post_id,
+                pt.tag_id
+            FROM posttags pt
+            """)
+            # Initialize an empty list to hold all tag representations
+            posttags = []
+
+            # Convert rows of data into a Python list
+            dataset = db_cursor.fetchall()
+
+            # Iterate list of data returned from database
+            for row in dataset:
+
+                # Create an tag instance from the current row.
+                # Note that the database fields are specified in
+                # exact order of the parameters defined in the
+                # tag class above.
+                posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
+
+                posttags.append(posttag.__dict__)
+
+            return posttags
+
+        elif resource == 'tags':
             db_cursor.execute("""
             SELECT
                 t.id,
@@ -68,7 +95,7 @@ def all(resource, key, value):
 
             return tags
         #confirms resource
-        if resource == 'posts':
+        elif resource == 'posts':
             sort_by = ""
             where_clause = ""
             #confirms query key
@@ -101,7 +128,9 @@ def all(resource, key, value):
                 c.id cat_id,
                 c.label cat_label,
                 pt.tag_id,
-                pt.post_id
+                pt.post_id, 
+                t.id tag_id,
+                t.label tag_label
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
@@ -125,7 +154,6 @@ def all(resource, key, value):
 
             # Iterate list of data returned from database
             for row in dataset:
-
                 # Create an post instance from the current row.
                 # Note that the database fields are specified in
                 # exact order of the parameters defined in the
@@ -135,17 +163,19 @@ def all(resource, key, value):
                                 row['content'], row['approved'])
                 user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
                 category = Category(row['cat_id'], row['cat_label'])
-                posttag = PostTag(row['post_id'], row['tag_id'])
+                posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
+                tag = Tag(row['tag_id'], row['tag_label'])
 
                 post.user = user.__dict__
                 post.category = category.__dict__
                 post.posttag = posttag.__dict__
+                post.tag = tag.__dict__
 
                 posts.append(post.__dict__)
 
             return posts
         
-        if resource == 'subscriptions':
+        elif resource == 'subscriptions':
             sort_by = ""
             where_clause = ""
             #confirms query key
@@ -186,7 +216,7 @@ def all(resource, key, value):
 
             return subscriptions
 
-        if resource == 'users':
+        elif resource == 'users':
 
             db_cursor.execute("""
             SELECT
@@ -409,10 +439,10 @@ def create(resource, new_data):
         elif resource == 'posts':
             db_cursor.execute("""
             INSERT INTO Posts
-                ( user_id, tag_id, category_id, title, publication_date, image_url, content, approved )
+                ( user_id, category_id, title, publication_date, image_url, content, approved )
             VALUES
-                ( ?, ?, ?, ?, ?, ?, ?, ?);
-            """, (new_data['user_id'], new_data['category_id'],new_data['tag_id'],
+                ( ?, ?, ?, ?, ?, ?, ?);
+            """, (new_data['user_id'], new_data['category_id'],
                 new_data['title'], new_data["publication_date"],
                 new_data['image_url'], new_data['content'], new_data['approved'] ))
 
@@ -431,6 +461,14 @@ def create(resource, new_data):
             VALUES
                 ( ? );
             """, (new_data['label'], ))
+
+        elif resource == 'posttags':
+            db_cursor.execute("""
+            INSERT INTO PostTags
+                ( post_id, tag_id )
+            VALUES
+                ( ?, ? );
+            """, (new_data['post_id'], new_data['tag_id'] ))
 
         id = db_cursor.lastrowid
 
