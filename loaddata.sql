@@ -179,6 +179,8 @@ SELECT
     u.last_name,
     u.username,
     c.label,
+    pt.id, 
+    pt.post_id, 
     pt.tag_id,
     t.label
 FROM posts p
@@ -201,4 +203,9 @@ SELECT
 FROM posttags pt 
 JOIN tags t
   ON t.id = pt.tag_id
+
+UPDATE Posts
+SET tag_id = 1
+WHERE id = 6
+
 

@@ -89,6 +89,7 @@ def all(resource, key, value):
             SELECT
                 p.id,
                 p.user_id,
+                p.tag_id,
                 p.category_id,
                 p.title,
                 p.publication_date,
@@ -98,9 +99,9 @@ def all(resource, key, value):
                 u.first_name,
                 u.last_name,
                 u.username,
-                c.label,
-                pt.tag_id,
-                t.label
+                c.label cat_label,
+                pt.post_id,
+                t.label tag_label
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
@@ -129,17 +130,17 @@ def all(resource, key, value):
                 # Note that the database fields are specified in
                 # exact order of the parameters defined in the
                 # Post class above.
-                post = Post(row['id'], row['user_id'], row['category_id'],
+                post = Post(row['id'], row['user_id'], row['tag_id'], row['category_id'], 
                                 row['title'], row['publication_date'], row['image_url'],
                                 row['content'], row['approved'])
                 user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
-                category = Category(row['id'], row['label'])
-
-                tag = Tag(row['tag_id'], row['label'])
+                category = Category(row['category_id'], row['cat_label'])
+                tag = Tag(row['tag_id'], row['tag_label'])
 
                 post.user = user.__dict__
                 post.category = category.__dict__
                 post.tag = tag.__dict__
+
                 posts.append(post.__dict__)
 
             return posts
@@ -367,16 +368,24 @@ def create(resource, new_data):
         elif resource == 'posts':
             db_cursor.execute("""
             INSERT INTO Posts
-                ( user_id, category_id, title, publication_date, image_url, content, approved )
+                ( user_id, tag_id, category_id, title, publication_date, image_url, content, approved )
             VALUES
-                ( ?, ?, ?, ?, ?, ?, ?);
-            """, (new_data['user_id'], new_data['category_id'],
+                ( ?, ?, ?, ?, ?, ?, ?, ?);
+            """, (new_data['user_id'], new_data['category_id'],new_data['tag_id'],
                 new_data['title'], new_data["publication_date"],
                 new_data['image_url'], new_data['content'], new_data['approved'] ))
 
         elif resource == 'categories':
             db_cursor.execute("""
             INSERT INTO Categories
+                ( label )
+            VALUES
+                ( ? );
+            """, (new_data['label'], ))
+
+        elif resource == 'tags':
+            db_cursor.execute("""
+            INSERT INTO Tags
                 ( label )
             VALUES
                 ( ? );
