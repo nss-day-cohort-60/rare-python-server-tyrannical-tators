@@ -166,48 +166,10 @@ WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
 
 INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')
 
-SELECT
-    p.id,
-    p.user_id,
-    p.category_id,
-    p.title,
-    p.publication_date,
-    p.image_url,
-    p.content,
-    p.approved,
-    u.first_name,
-    u.last_name,
-    u.username,
-    c.label,
-    pt.id, 
-    pt.post_id, 
-    pt.tag_id,
-    t.label
-FROM posts p
-JOIN users u
-    ON u.id = p.user_id
-JOIN categories c
-    on c.id = p.category_id
-JOIN posttags pt
-    ON pt.post_id = p.id
-JOIN tags t
-    ON t.id = pt.tag_id
-
-
-
-SELECT 
-  pt.id, 
-  pt.post_id, 
-  pt.tag_id,
-  t.label
-FROM posttags pt 
-JOIN tags t
-  ON t.id = pt.tag_id
-
-UPDATE Posts
-SET tag_id = 1
-WHERE id = 6
-
-DELETE FROM Posts
-WHERE id = 6
-
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (4, 3, 'Category 3 Title', '2023-01-25', 'https://www.allrecipes.com/thmb/c_2gXiAwkO6u1UJCY-1eAVCy0h0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/54679_perfect-baked-potato-Rita-1x1-1-91711252bb3740088c8ea55c5f9bef1c.jpg', 'Category 3 is an important concept in many disciplines, including science, engineering, and economics. It is a classification system that is used to group, organize, and describe related items. Category 3 can be used to identify similar characteristics in objects, ideas, and processes, as well as to create hierarchy and structure for analyzing data. It can also help to identify patterns, trends, and correlations between different elements. Category 3 can be a powerful tool for understanding complex topics and making better decisions.', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (5, 4, 'Category 4 Title', '2023-01-27', 'https://twokooksinthekitchen.com/wp-content/uploads/2020/09/crispy-oven-roasted-potatoes.jpg', 'Member Category 4 is a broad term that covers a variety of topics, ranging from business to science and technology. Professionals in this field must be knowledgeable about a wide range of topics in order to stay up-to-date with the ever-changing environment. It is important for individuals in this category to have the latest trends and technologies at their fingertips in order to create successful projects and products. Additionally, they need to have a high level of creativity and problem-solving skills to come up with innovative solutions. Category 4 professionals are an invaluable asset to any organization and are essential for achieving success.', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (1, 5, 'Category 5 Title', '2023-01-28', 'https://keviniscooking.com/wp-content/uploads/2021/02/Potatoes-Hasselback-square-1000x1000.jpg', 'Hasselback potatoes are a unique and tasty way to prepare potatoes. The potatoes are sliced thinly, almost all the way through, and then brushed with butter and herbs before being cooked in the oven. The result is a crispy outside and a fluffy and creamy inside. Hasselback potatoes are a great side dish for', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (2, 6, 'Category 6 Title', '2023-01-29', 'https://bakeitwithlove.com/wp-content/uploads/2022/09/Best-potato-for-baking-potatoes-or-making-twice-baked-potatoes.jpg', 'Twice baked potatoes are a delicious and versatile side dish. They are made by baking a potato, scooping out the insides and mixing them with creamy butter, sharp cheddar cheese, and other delicious ingredients like bacon, jalapenos, and chives. The mixture is then spooned back into the potato skins, topped with more cheese and baked until golden and crispy. The result is a creamy, flavorful potato that is a crowd-pleaser for any gathering. Plus, they''re easy to make and can be prepped ahead of time for a no-fuss side dish.', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (3, 7, 'Category 7 Title', '2023-01-30', 'https://preppykitchen.com/wp-content/uploads/2022/10/Smashed-Potatoes-Feature.jpg', 'Smashed potatoes make for a delicious side dish that can compliment any entrée. To make them, start by boiling a few potatoes in salted water until they are soft. Drain them, return them to the pot, and use a potato masher to break them up. Add a pat of butter and some garlic, and season to taste with salt, pepper, and herbs. For a rustic version, transfer the potatoes to an oven-safe dish and bake in a preheated 375-degree oven for 15 minutes. Serve hot, as a side dish for steak, grilled chicken, or fish.', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (4, 8, 'Category 8 Title', '2023-01-31', 'https://www.tasteofhome.com/wp-content/uploads/2022/03/Potatoes-Lyonnaise_EXPS_TOHAM22_266867_E11_10_4b.jpg', 'Potatoes Lyonnaise is a classic French dish made with potatoes, onions, butter, and herbs. The dish is usually served as a side, but can also be enjoyed as a main. The potatoes are first boiled until they are tender, then sliced and fried in oil and butter with onions. The combination of the onions and potatoes creates a delicious flavor, while the herbs add an extra layer of flavor. Potatoes Lyonnaise is a great way to add some French flair to any meal.', 1);
+INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (5, 9, 'Category 9 Title', '2023-02-01', 'https://images-gmi-pmc.edge-generalmills.com/63aa42b4-cfbe-4054-94e3-e595ee2731ea.jpg', 'Potatoes Anna is a classic French dish that is simple to prepare and utterly delicious. The potatoes are cooked in a shallow dish, with butter, salt and pepper, and occasionally some herbs such as thyme. The potatoes are layered in the dish, beginning with a layer of butter and onion, then potatoes and more butter, and so on until the dish is filled. Then the potatoes are cooked at a high temperature until they are golden and tender. A classic accompaniment to this dish is a salad, but it can also be served as a side dish with a variety of meats. The creamy texture of the potatoes and the delicious buttery flavour make this dish a real winner.', 1);

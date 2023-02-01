@@ -91,10 +91,10 @@ class HandleRequests(BaseHTTPRequestHandler):
             
             response = {}
             (resource, id, key, value) = parsed
-            if key == 'postId' and resource == 'comments':
+            if key == 'post_id' and resource == 'comments':
                 self._set_headers(200)
                 response = get_comments_by_post(value)
-            elif key == 'userId' and resource == 'subscriptions':
+            elif key == 'follower_id' and resource == 'posts':
                 self._set_headers(200)
                 response = get_subscriptions_by_userId(value)
             else:

@@ -144,6 +144,47 @@ def all(resource, key, value):
                 posts.append(post.__dict__)
 
             return posts
+        
+        if resource == 'subscriptions':
+            sort_by = ""
+            where_clause = ""
+            #confirms query key
+            if key == "_sortBy":
+                if value == "follower_id":
+                    sort_by = "ORDER BY follower_id"
+                elif value == "author_id":
+                    sort_by = "ORDER BY author_id"
+            elif key == "follower_id":
+                where_clause = f"WHERE s.follower_id = {value}"
+            elif key == "author_id":
+                where_clause = f"WHERE s.author_id = {value}"
+                
+            sql_string = f"""
+            SELECT
+                *
+            FROM subscriptions s
+            {where_clause}
+            {sort_by}
+            """
+            db_cursor.execute(sql_string)
+
+            # Initialize an empty list to hold all post representations
+            subscriptions = []
+
+            # Convert rows of data into a Python list
+            dataset = db_cursor.fetchall()
+
+            # Iterate list of data returned from database
+            for row in dataset:
+
+                # Create an post instance from the current row.
+                # Note that the database fields are specified in
+                # exact order of the parameters defined in the
+                # Post class above.
+                subscription = Subscription(row['id'], row['follower_id'], row['author_id'], row['created_on'])
+                subscriptions.append(subscription.__dict__)
+
+            return subscriptions
 
         if resource == 'users':
 
