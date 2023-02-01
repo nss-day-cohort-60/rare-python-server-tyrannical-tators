@@ -91,9 +91,10 @@ CREATE TABLE "Categories" (
 );
 
 UPDATE Posts
-SET tag_id = 2 
+SET tag_id = 3 
 WHERE id = 3;
 
+INSERT INTO Posttags ('post_id', 'tag_id') VALUES (3, 3);
 
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
@@ -164,3 +165,40 @@ JOIN categories c
 WHERE p.user_id = Subscriptions.author_id AND Subscriptions.follower_id = 1;
 
 INSERT INTO Subscriptions ('follower_id', 'author_id', 'created_on') VALUES (1, 2, '2023-01-25')
+
+SELECT
+    p.id,
+    p.user_id,
+    p.category_id,
+    p.title,
+    p.publication_date,
+    p.image_url,
+    p.content,
+    p.approved,
+    u.first_name,
+    u.last_name,
+    u.username,
+    c.label,
+    pt.tag_id,
+    t.label
+FROM posts p
+JOIN users u
+    ON u.id = p.user_id
+JOIN categories c
+    on c.id = p.category_id
+JOIN posttags pt
+    ON pt.post_id = p.id
+JOIN tags t
+    ON t.id = pt.tag_id
+
+
+
+SELECT 
+  pt.id, 
+  pt.post_id, 
+  pt.tag_id,
+  t.label
+FROM posttags pt 
+JOIN tags t
+  ON t.id = pt.tag_id
+

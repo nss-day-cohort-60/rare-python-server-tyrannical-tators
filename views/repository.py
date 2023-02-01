@@ -98,12 +98,19 @@ def all(resource, key, value):
                 u.first_name,
                 u.last_name,
                 u.username,
-                c.label
+                c.label,
+                pt.tag_id,
+                t.label
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
             JOIN categories c
                 on c.id = p.category_id
+            JOIN posttags pt
+                ON pt.post_id = p.id
+            JOIN tags t
+                ON t.id = pt.tag_id
+
             {where_clause}
             {sort_by}
             """
@@ -127,8 +134,12 @@ def all(resource, key, value):
                                 row['content'], row['approved'])
                 user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
                 category = Category(row['id'], row['label'])
+
+                tag = Tag(row['tag_id'], row['label'])
+
                 post.user = user.__dict__
                 post.category = category.__dict__
+                post.tag = tag.__dict__
                 posts.append(post.__dict__)
 
             return posts

@@ -12,3 +12,4 @@ class Post():
         self.approved = approved
         self.author = None
         self.category = None
+        self.tag = None
