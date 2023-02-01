@@ -45,7 +45,7 @@ CREATE TABLE "Posts" (
 );
 
 ALTER TABLE Posts
-ADD tag_id INTEGER;
+DROP COLUMN tag_id
 
 CREATE TABLE "Comments" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -208,4 +208,6 @@ UPDATE Posts
 SET tag_id = 1
 WHERE id = 6
 
+DELETE FROM Posts
+WHERE id = 6
 

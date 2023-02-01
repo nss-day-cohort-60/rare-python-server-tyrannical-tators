@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
-from models import Post, Category, Tag, User, Subscription, Comment
+from models import Post, Category, Tag, User, Subscription, Comment, PostTag
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -89,7 +89,6 @@ def all(resource, key, value):
             SELECT
                 p.id,
                 p.user_id,
-                p.tag_id,
                 p.category_id,
                 p.title,
                 p.publication_date,
@@ -99,9 +98,10 @@ def all(resource, key, value):
                 u.first_name,
                 u.last_name,
                 u.username,
+                c.id cat_id,
                 c.label cat_label,
-                pt.post_id,
-                t.label tag_label
+                pt.tag_id,
+                pt.post_id
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
@@ -130,16 +130,16 @@ def all(resource, key, value):
                 # Note that the database fields are specified in
                 # exact order of the parameters defined in the
                 # Post class above.
-                post = Post(row['id'], row['user_id'], row['tag_id'], row['category_id'], 
+                post = Post(row['id'], row['user_id'], row['category_id'], 
                                 row['title'], row['publication_date'], row['image_url'],
                                 row['content'], row['approved'])
-                user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
-                category = Category(row['category_id'], row['cat_label'])
-                tag = Tag(row['tag_id'], row['tag_label'])
+                user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+                category = Category(row['cat_id'], row['cat_label'])
+                posttag = PostTag(row['post_id'], row['tag_id'])
 
                 post.user = user.__dict__
                 post.category = category.__dict__
-                post.tag = tag.__dict__
+                post.posttag = posttag.__dict__
 
                 posts.append(post.__dict__)
 
