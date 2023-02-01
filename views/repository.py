@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
-from models import Post, Category, Tag, User, Subscription, Comment
+from models import Post, Category, Tag, User, Subscription, Comment, PostTag
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -86,7 +86,7 @@ def all(resource, key, value):
                 where_clause = f"WHERE p.category_id = {value}"
                 
             sql_string = f"""
-            SELECT
+            SELECT 
                 p.id,
                 p.user_id,
                 p.category_id,
@@ -98,12 +98,22 @@ def all(resource, key, value):
                 u.first_name,
                 u.last_name,
                 u.username,
-                c.label
+                c.id cat_id,
+                c.label cat_label,
+                pt.tag_id tag_id,
+                pt.post_id post_id, 
+                t.id tag_id, 
+                t.label tag_label
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
             JOIN categories c
                 on c.id = p.category_id
+            JOIN posttags pt
+                ON pt.post_id = p.id
+            JOIN tags t 
+                ON t.id = pt.tag_id
+
             {where_clause}
             {sort_by}
             """
@@ -126,10 +136,15 @@ def all(resource, key, value):
                                 row['content'], row['approved'])
                 user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
                 category = Category(row['cat_id'], row['cat_label'])
+                # posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
+                tag = Tag(row['tag_id'], row['tag_label'])
         
 
                 post.user = user.__dict__
                 post.category = category.__dict__
+                # post.posttag = posttag.__dict__
+                post.tag = tag.__dict__
+
         
                 posts.append(post.__dict__)
 
@@ -422,6 +437,14 @@ def create(resource, new_data):
             VALUES
                 ( ? );
             """, (new_data['label'], ))
+
+        elif resource == 'posttags':
+            db_cursor.execute("""
+            INSERT INTO PostTags
+                ( post_id, tag_id )
+            VALUES
+                ( ?, ? );
+            """, (new_data['post_id'], new_data['tag_id'] ))
 
         id = db_cursor.lastrowid
 
