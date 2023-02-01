@@ -44,8 +44,12 @@ def all(resource, key, value):
             SELECT
                 pt.id,
                 pt.post_id,
-                pt.tag_id
+                pt.tag_id, 
+                t.id tag_id, 
+                t.label tag_label
             FROM posttags pt
+            JOIN tags t 
+                ON t.id = pt.tag_id
             """)
             # Initialize an empty list to hold all tag representations
             posttags = []
@@ -61,7 +65,9 @@ def all(resource, key, value):
                 # exact order of the parameters defined in the
                 # tag class above.
                 posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
+                tag = Tag(row['tag_id'], row['tag_label'])
 
+                posttag.tag = tag.__dict__
                 posttags.append(posttag.__dict__)
 
             return posttags
@@ -128,9 +134,7 @@ def all(resource, key, value):
                 c.id cat_id,
                 c.label cat_label,
                 pt.tag_id,
-                pt.post_id, 
-                t.id tag_id,
-                t.label tag_label
+                pt.post_id
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
@@ -138,9 +142,7 @@ def all(resource, key, value):
                 on c.id = p.category_id
             JOIN posttags pt
                 ON pt.post_id = p.id
-            JOIN tags t
-                ON t.id = pt.tag_id
-
+        
             {where_clause}
             {sort_by}
             """
@@ -164,13 +166,11 @@ def all(resource, key, value):
                 user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
                 category = Category(row['cat_id'], row['cat_label'])
                 posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
-                tag = Tag(row['tag_id'], row['tag_label'])
 
                 post.user = user.__dict__
                 post.category = category.__dict__
                 post.posttag = posttag.__dict__
-                post.tag = tag.__dict__
-
+        
                 posts.append(post.__dict__)
 
             return posts
@@ -297,6 +297,7 @@ def single(resource, id):
                                 data['content'], data['approved'])
             user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
             category = Category(data['id'], data['label'])
+
             post.author = user.__dict__
             post.category = category.__dict__
 
