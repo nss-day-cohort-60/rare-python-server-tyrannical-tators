@@ -107,11 +107,11 @@ def all(resource, key, value):
             FROM posts p
             JOIN users u
                 ON u.id = p.user_id
-            JOIN categories c
+            LEFT JOIN categories c
                 on c.id = p.category_id
-            JOIN posttags pt
+            LEFT JOIN posttags pt
                 ON pt.post_id = p.id
-            JOIN tags t 
+            LEFT JOIN tags t 
                 ON t.id = pt.tag_id
 
             {where_clause}
