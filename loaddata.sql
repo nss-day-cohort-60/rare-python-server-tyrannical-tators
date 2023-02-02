@@ -202,4 +202,4 @@ JOIN posttags pt
 JOIN tags t 
     ON t.id = pt.tag_id
 
-
+DELETE FROM Posts WHERE id IN (16, 17, 18, 19, 20);
