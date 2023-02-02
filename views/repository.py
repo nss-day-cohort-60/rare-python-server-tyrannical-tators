@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from datetime import datetime
-from models import Post, Category, Tag, User, Subscription, Comment
+from models import Post, Category, Tag, User, Subscription, Comment, PostTag
 
 def all(resource, key, value):
     # Open a connection to the database
@@ -39,7 +39,7 @@ def all(resource, key, value):
 
             return categories
 
-        if resource == 'tags':
+        elif resource == 'tags':
             db_cursor.execute("""
             SELECT
                 t.id,
@@ -68,7 +68,7 @@ def all(resource, key, value):
 
             return tags
         #confirms resource
-        if resource == 'posts':
+        elif resource == 'posts':
             sort_by = ""
             where_clause = ""
             #confirms query key
@@ -86,7 +86,7 @@ def all(resource, key, value):
                 where_clause = f"WHERE p.category_id = {value}"
                 
             sql_string = f"""
-            SELECT
+            SELECT 
                 p.id,
                 p.user_id,
                 p.category_id,
@@ -98,14 +98,25 @@ def all(resource, key, value):
                 u.first_name,
                 u.last_name,
                 u.username,
-                c.label
+                c.id cat_id,
+                c.label cat_label,
+                group_concat(pt.tag_id, ', ') tag_id,
+                pt.post_id post_id, 
+                t.id tag_id, 
+                group_concat(t.label, ', ') tag_label
             FROM posts p
-            JOIN users u
+            LEFT JOIN users u
                 ON u.id = p.user_id
-            JOIN categories c
+            LEFT JOIN categories c
                 on c.id = p.category_id
+            LEFT JOIN posttags pt
+                ON pt.post_id = p.id
+            LEFT JOIN tags t 
+                ON t.id = pt.tag_id
+
             {where_clause}
             {sort_by}
+            GROUP BY p.id
             """
             db_cursor.execute(sql_string)
 
@@ -117,23 +128,30 @@ def all(resource, key, value):
 
             # Iterate list of data returned from database
             for row in dataset:
-
                 # Create an post instance from the current row.
                 # Note that the database fields are specified in
                 # exact order of the parameters defined in the
                 # Post class above.
-                post = Post(row['id'], row['user_id'], row['category_id'],
+                post = Post(row['id'], row['user_id'], row['category_id'], 
                                 row['title'], row['publication_date'], row['image_url'],
                                 row['content'], row['approved'])
-                user = User(row['id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
-                category = Category(row['id'], row['label'])
+                user = User(row['user_id'], row['first_name'], row['last_name'], None, None, row['username'], None, None, None, None)
+                category = Category(row['cat_id'], row['cat_label'])
+                # posttag = PostTag(row['id'], row['post_id'], row['tag_id'])
+                tag = Tag(row['tag_id'], row['tag_label'])
+        
+
                 post.user = user.__dict__
                 post.category = category.__dict__
+                # post.posttag = posttag.__dict__
+                post.tag = tag.__dict__
+
+        
                 posts.append(post.__dict__)
 
             return posts
         
-        if resource == 'subscriptions':
+        elif resource == 'subscriptions':
             sort_by = ""
             where_clause = ""
             #confirms query key
@@ -174,7 +192,7 @@ def all(resource, key, value):
 
             return subscriptions
 
-        if resource == 'users':
+        elif resource == 'users':
 
             db_cursor.execute("""
             SELECT
@@ -255,6 +273,7 @@ def single(resource, id):
                                 data['content'], data['approved'])
             user = User(data['id'], data['first_name'], data['last_name'], None, None, data['username'], None, None, None, None)
             category = Category(data['id'], data['label'])
+
             post.author = user.__dict__
             post.category = category.__dict__
 
@@ -419,6 +438,14 @@ def create(resource, new_data):
             VALUES
                 ( ? );
             """, (new_data['label'], ))
+
+        elif resource == 'posttags':
+            db_cursor.execute("""
+            INSERT INTO PostTags
+                ( post_id, tag_id )
+            VALUES
+                ( ?, ? );
+            """, (new_data['post_id'], new_data['tag_id'] ))
 
         id = db_cursor.lastrowid
 

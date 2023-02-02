@@ -44,6 +44,9 @@ CREATE TABLE "Posts" (
   FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`)
 );
 
+ALTER TABLE Posts
+DROP COLUMN tag_id
+
 CREATE TABLE "Comments" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "post_id" INTEGER,
@@ -86,6 +89,12 @@ CREATE TABLE "Categories" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "label" varchar
 );
+
+UPDATE Posts
+SET tag_id = 3 
+WHERE id = 3;
+
+INSERT INTO Posttags ('post_id', 'tag_id') VALUES (3, 3);
 
 INSERT INTO Categories ('label') VALUES ('News');
 INSERT INTO Tags ('label') VALUES ('JavaScript');
@@ -164,3 +173,33 @@ INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image
 INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (3, 7, 'Category 7 Title', '2023-01-30', 'https://preppykitchen.com/wp-content/uploads/2022/10/Smashed-Potatoes-Feature.jpg', 'Smashed potatoes make for a delicious side dish that can compliment any entrée. To make them, start by boiling a few potatoes in salted water until they are soft. Drain them, return them to the pot, and use a potato masher to break them up. Add a pat of butter and some garlic, and season to taste with salt, pepper, and herbs. For a rustic version, transfer the potatoes to an oven-safe dish and bake in a preheated 375-degree oven for 15 minutes. Serve hot, as a side dish for steak, grilled chicken, or fish.', 1);
 INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (4, 8, 'Category 8 Title', '2023-01-31', 'https://www.tasteofhome.com/wp-content/uploads/2022/03/Potatoes-Lyonnaise_EXPS_TOHAM22_266867_E11_10_4b.jpg', 'Potatoes Lyonnaise is a classic French dish made with potatoes, onions, butter, and herbs. The dish is usually served as a side, but can also be enjoyed as a main. The potatoes are first boiled until they are tender, then sliced and fried in oil and butter with onions. The combination of the onions and potatoes creates a delicious flavor, while the herbs add an extra layer of flavor. Potatoes Lyonnaise is a great way to add some French flair to any meal.', 1);
 INSERT INTO Posts ('user_id', 'category_id', 'title', 'publication_date', 'image_url', 'content', 'approved') VALUES (5, 9, 'Category 9 Title', '2023-02-01', 'https://images-gmi-pmc.edge-generalmills.com/63aa42b4-cfbe-4054-94e3-e595ee2731ea.jpg', 'Potatoes Anna is a classic French dish that is simple to prepare and utterly delicious. The potatoes are cooked in a shallow dish, with butter, salt and pepper, and occasionally some herbs such as thyme. The potatoes are layered in the dish, beginning with a layer of butter and onion, then potatoes and more butter, and so on until the dish is filled. Then the potatoes are cooked at a high temperature until they are golden and tender. A classic accompaniment to this dish is a salad, but it can also be served as a side dish with a variety of meats. The creamy texture of the potatoes and the delicious buttery flavour make this dish a real winner.', 1);
+
+SELECT
+    p.id,
+    p.user_id,
+    p.category_id,
+    p.title,
+    p.publication_date,
+    p.image_url,
+    p.content,
+    p.approved,
+    u.first_name,
+    u.last_name,
+    u.username,
+    c.id cat_id,
+    c.label cat_label,
+    pt.tag_id,
+    pt.post_id, 
+    t.id, 
+    t.label
+FROM posts p
+JOIN users u
+    ON u.id = p.user_id
+JOIN categories c
+    on c.id = p.category_id
+JOIN posttags pt
+    ON pt.post_id = p.id
+JOIN tags t 
+    ON t.id = pt.tag_id
+
+DELETE FROM Posts WHERE id IN (16, 17, 18, 19, 20);

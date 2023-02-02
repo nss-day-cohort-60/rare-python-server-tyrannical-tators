@@ -4,3 +4,4 @@ from .post import Post
 from .tag  import Tag
 from .user import User
 from .subscription import Subscription
+from .posttag import PostTag
