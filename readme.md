@@ -2,7 +2,9 @@
 
 ## Project Overview:
 Rare Publishing is a Full-Stack group project with collaboration from students in Cohort 60 of Nashville Software School.
-Rare Publishing was built in two sprints, with this repo being the Python server built in the first 5-day sprint, it no longer works with the current [client code](https://github.com/nss-day-cohort-60/rare-client-tenacious-tators) as is, but functionality is still able to be tested and viewed using an API platform, the team used Postman and Thunderclient VS Code Extension, or you can view the full stack app using the client code at [this point](https://github.com/nss-day-cohort-60/rare-client-tenacious-tators/tree/dc8457498218a9ed8d8edc74b72f877b618b9d10) in it's repository.
+
+Rare Publishing was built in two sprints, with this repo being the Python server built in the first 5-day sprint, it no longer works with the current [client code](https://github.com/nss-day-cohort-60/rare-client-tenacious-tators) as is, but functionality is still able to be tested and viewed using an API platform, the team used Postman and [Thunderclient VS Code Extension](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client), or you can view the full stack app using the client code at [this point](https://github.com/nss-day-cohort-60/rare-client-tenacious-tators/tree/dc8457498218a9ed8d8edc74b72f877b618b9d10) in it's repository.
+
 The server was eventually re-built using [Django Rest](https://github.com/nss-day-cohort-60/django-taters-api) framework, and that repo fully supports the current client code.
 
 
@@ -25,6 +27,8 @@ It's a mutual space for anyone that wants to share and read other's ideas.
 Instead of searching Google you can now go to this site to read opinions(totally not like Twitter or Facebook).
 
 ## Demo Video
+Demo of the FINAL app, after the server was rebuilt using the Django REST framework:
+
 [![Watch the demo video](https://res.cloudinary.com/dry2hcdx9/image/upload/v1677792867/Screen_Shot_2023-03-02_at_3.30.58_PM_s4i04j.png)](https://drive.google.com/file/d/1j4MhPk-8XAOcEW-BVWEF81ohGrAFal73/view?usp=share_link)
 
 
@@ -47,20 +51,17 @@ git clone git@github.com:nss-day-cohort-60/rare-python-server-tyrannical-tators
 
 3. Test Server with requests
 ```
-GET
-http://localhost:8088/users
-http://localhost:8088/categories
-http://localhost:8088/posts
-http://localhost:8088/tags
-http://localhost:8088/subscriptions
+GET http://localhost:8088/users
+GET http://localhost:8088/categories
+GET http://localhost:8088/posts
+GET http://localhost:8088/tags
+GET http://localhost:8088/subscriptions
 ```
 ```
-GET
-http://localhost:8088/users/1
+GET http://localhost:8088/users/1
 ```
 ```
-POST
-http://localhost:8088/users
+POST http://localhost:8088/users
 ```
 ```json
 {
@@ -74,8 +75,7 @@ http://localhost:8088/users
  }
 ```
 ```
-POST
-http://localhost:8088/tags
+POST http://localhost:8088/tags
 ```
 ```json
 {
@@ -83,8 +83,7 @@ http://localhost:8088/tags
 }
 ```
 ```
-POST
-http://localhost:8088/categories
+POST http://localhost:8088/categories
 ```
 ```json
 {
@@ -92,8 +91,7 @@ http://localhost:8088/categories
 }
 ```
 ```
-POST
-http://localhost:8088/posts
+POST http://localhost:8088/posts
 ```
 ```json
 {
@@ -111,4 +109,5 @@ http://localhost:8088/posts
 
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![PYTHON](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white)
 
